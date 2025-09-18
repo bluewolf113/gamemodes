@@ -1,0 +1,7 @@
+"ixdreams"
+{
+	"base" 			"helix"
+	"title" 		"Electric Dreams - Dark Energy"
+	"author" 		"Electric Dreams"
+	"menusystem"	"1"
+}

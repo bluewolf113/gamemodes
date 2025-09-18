@@ -1,0 +1,10 @@
+ITEM.name = "cyanide";
+ITEM.model = "models/props_junk/garbage_glassbottle001a.mdl";
+ITEM.width	= 1;
+ITEM.height	= 1;
+ITEM.description = "Liquid Container base.";
+ITEM.category = "poison";
+ITEM.liquid = 500                               -- default to being empty
+ITEM.capacity = 500                             -- max capacity of the container, in mL
+ITEM.emptyContainer = nil                       -- item uniqueID that the container should become upon being empty. generally, only use this for bottles of things you want to start filled - say, beer you want to become a beer bottle.
+ITEM.isPoisoned = true  -- Defaults to not poisoned
