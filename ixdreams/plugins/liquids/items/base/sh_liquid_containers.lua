@@ -36,11 +36,11 @@ function ITEM:PopulateTooltip(tooltip)
     local vol = self:GetVolume()
 
     if(vol <= 0) then
-        data:SetText("\nHolds: " .. ix.liquids.ConvertUnit(self.capacity) .. "\nEmpty")
+        data:SetText("\nCapacity: " .. ix.liquids.ConvertUnit(self.capacity) .. "\nEmpty")
     else 
-        data:SetText("\nHolds: " .. ix.liquids.ConvertUnit(self.capacity) .. "\n" ..
+        data:SetText("\nCapacity: " .. ix.liquids.ConvertUnit(self.capacity) .. "\n" ..
         "Current Amount: " .. ix.liquids.ConvertUnit(vol) .. "\n" ..
-        local look = liquid and liquid.look or "an unknown liquid."
+        "Contains " .. ix.liquids.Get(self:GetLiquid()):GetName())
     end
 
     data:SetFont("ixGenericFont")
@@ -466,28 +466,3 @@ ITEM.functions.WaterPlant = {
     end
 }
 
-
-ITEM.functions.BTaste = {
-    name = "Taste",
-    icon = "icon16/cup.png",
-
-    OnRun = function(item)
-        local client = item.player
-        local liquid = ix.liquids.Get(item:GetLiquid())
-
-        if not liquid then return false end
-
-        -- Print the taste description to chat
-        client:ChatPrint(liquid.taste or "You can't quite place the flavor.")
-
-        return false
-    end,
-
-    OnCanRun = function(item)
-        local client = item.player
-        if not client or item:GetVolume() <= 0 then return false end
-
-        local trace = client:GetEyeTrace()
-        local ent = trace.Entity
-    end
-}

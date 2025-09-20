@@ -8,6 +8,7 @@ ITEM.description = "The last of the natural-grown vegetables, dried and packaged
 ITEM.eat = "Tastes like clear rain and good soil."
 ITEM.category = "Food"
 ITEM.hunger = 15
+ITEM.thirst = -1
 ITEM.nutrition = 1
 ITEM.uses = 12
 ITEM.junk = {["emptybox4"] =  1}

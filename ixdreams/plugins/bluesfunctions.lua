@@ -317,36 +317,3 @@ ix.command.Add("SetItemDescription", {
         client:Notify("Item description updated.")
     end
 })
-
-local MAX_SPEED = 235 -- Reference speed for full volume
-
-if SERVER then
-    util.AddNetworkString("ixCustomFootstep")
-
-    hook.Add("Think", "CustomFootstepThink", function()
-        for _, ply in ipairs(player.GetAll()) do
-            if not ply:Alive() then continue end
-            if not ply:GetCharacter() then continue end
-            if ply:IsNoClipping() then continue end
-
-            ply._nextStep = ply._nextStep or 0
-            local now = CurTime()
-
-            local vel = ply:GetVelocity():Length()
-            if vel > 5 and now >= ply._nextStep then
-                ply._nextStep = now + STEP_INTERVAL
-
-                local volume = math.Clamp(vel / MAX_SPEED, 0.2, 1.0) * 75
-                local sound = "player/footsteps/wood1.wav"
-
-                ply:EmitSound(sound, volume, 100)
-            end
-        end
-    end)
-
-    -- Optional: suppress default footsteps entirely
-    hook.Add("PlayerFootstep", "SuppressDefaultFootsteps", function()
-        return true
-    end)
-end
-

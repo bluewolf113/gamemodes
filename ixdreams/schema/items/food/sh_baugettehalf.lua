@@ -5,12 +5,14 @@ ITEM.model = Model("models/foodnhouseholditems/bread_half.mdl")
 ITEM.width = 1
 ITEM.height = 1
 ITEM.description = "wow."
+ITEM.useText = "Eat"
 ITEM.eat = "."
 ITEM.category = "Food"
 ITEM.hunger = 4
-ITEM.thirst = 3
+ITEM.thirst = 0
 ITEM.nutrition = 30
-ITEM.uses = 2
+ITEM.uses = 5
+ITEM.usesAlias = {"Bite", "Bites"}
 
 ITEM.functions.combine = {
     OnRun = function(item, data)

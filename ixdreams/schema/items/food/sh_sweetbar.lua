@@ -9,3 +9,4 @@ ITEM.eat = "Crumbles like charcoal and tastes like it too."
 ITEM.category = "Food"
 ITEM.hunger = 2
 ITEM.uses = 3
+ITEM.usesAlias = {"Bite", "Bites"}

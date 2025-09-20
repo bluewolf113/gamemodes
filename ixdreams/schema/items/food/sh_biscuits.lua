@@ -5,9 +5,11 @@ ITEM.model = Model("models/props_hla/props/biscuits.mdl")
 ITEM.width = 1
 ITEM.height = 1
 ITEM.description = "An old box of unleavened biscuits."
+ITEM.useText = "Eat"
 ITEM.eat = "You must chew carefully or risk breaking a tooth." 
 ITEM.category = "Food"
 ITEM.hunger = 4
+ITEM.thirst = -1
 ITEM.nutrition = 0.1
 ITEM.uses = 10
 ITEM.junk = {["emptybox6"] =  1}

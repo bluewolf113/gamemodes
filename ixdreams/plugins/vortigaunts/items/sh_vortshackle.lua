@@ -1,7 +1,7 @@
 ITEM.name = "Vort Shackle"
 ITEM.model = Model("models/props_junk/watermelon01.mdl")
 ITEM.description = "test."
-ITEM.category = "Test"
+ITEM.category = "Equipment"
 
 ITEM.functions.Shackle = {
     name = "Shackle",

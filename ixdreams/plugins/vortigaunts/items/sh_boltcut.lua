@@ -1,7 +1,7 @@
-ITEM.name = "Bolt CUtters"
+ITEM.name = "Bolt Cutters"
 ITEM.model = Model("models/props_junk/watermelon01.mdl")
 ITEM.description = "test."
-ITEM.category = "Test"
+ITEM.category = "Utility"
 
 ITEM.functions.Free = {
     name = "Free",

@@ -2,15 +2,17 @@ ITEM.base = "base_food"
 
 ITEM.name = "Halved Bread Loaf"
 ITEM.model = Model("models/goudin/stalker_pack/food/bread_06.mdl")
-ITEM.width = 1
+ITEM.width = 2
 ITEM.height = 1
 ITEM.description = "wow."
-ITEM.eat = "."
+ITEM.useText = "Eat"
+ITEM.eat = "Hm"
 ITEM.category = "Food"
-ITEM.hunger = 4
-ITEM.thirst = 3
+ITEM.hunger = 3
+ITEM.thirst = 0
 ITEM.nutrition = 30
-ITEM.uses = 2
+ITEM.uses = 4
+ITEM.usesAlias = {"Bite", "Bites"}
 
 ITEM.functions.combine = {
     OnRun = function(item, data)

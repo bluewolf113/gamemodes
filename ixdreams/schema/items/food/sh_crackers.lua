@@ -8,6 +8,7 @@ ITEM.description = "An old box of crackers."
 ITEM.eat = "They dry up your mouth like chalk." 
 ITEM.category = "Food"
 ITEM.hunger = 3
+ITEM.thirst = -1
 ITEM.nutrition = 1
 ITEM.nutrition = 0.08
 ITEM.uses = 15

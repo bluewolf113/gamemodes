@@ -8,4 +8,5 @@ ITEM.description = "A bag of bleached and saturated flour. Clamp brandings."
 ITEM.eat = "No taste, no nutrition, just dust."
 ITEM.category = "Food"
 ITEM.hunger = 1
+ITEM.hunger = -3
 ITEM.uses = 20

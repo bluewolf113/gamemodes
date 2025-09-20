@@ -11,6 +11,7 @@ ITEM.hunger = 5
 ITEM.thirst = 10
 ITEM.nutrition = 30
 ITEM.uses = 6
+ITEM.usesAlias = {"Bite", "Bites"}
 
 ITEM.functions.combine = {
     OnRun = function(item, data)

@@ -64,3 +64,69 @@ ITEM.functions.Give = {
 	end
 }
 
+ITEM.functions.combine = {
+    OnRun = function(item, data)
+        local client = item.player
+        local container = ix.item.instances[data and data[1]]
+        if not (IsValid(client) and container) then return false end
+
+        local char = client:GetCharacter()
+        local inv = char and char:GetInventory()
+        if not inv then return false end
+
+        local liquid = container:GetData("currentLiquid", nil)
+        local volume = container:GetData("currentAmount", 0)
+
+        if liquid ~= "rubbingalc" then
+            client:Notify("This container doesn't hold alcohol.")
+            return false
+        end
+
+        if volume < 50 then
+            client:Notify("Not enough alcohol to sterilize the bandage.")
+            return false
+        end
+
+        local movementKeys = {
+            [KEY_W] = true,
+            [KEY_A] = true,
+            [KEY_S] = true,
+            [KEY_D] = true,
+            [KEY_SPACE] = true,
+            [KEY_LSHIFT] = true
+        }
+
+        local cancelHook = "ixSterilizeCancel_" .. client:SteamID()
+        local canceled = false
+
+        hook.Add("PlayerButtonDown", cancelHook, function(ply, button)
+            if ply == client and movementKeys[button] then
+                canceled = true
+                client:SetAction()
+                hook.Remove("PlayerButtonDown", cancelHook)
+            end
+        end)
+
+        client:SetAction("Sterilizing bandage...", 1.9, function()
+            hook.Remove("PlayerButtonDown", cancelHook)
+            if canceled then return end
+
+            container:SetData("currentAmount", volume - 50)
+
+            inv:Add("sterilizedbandage", 1, nil, item.x, item.y)
+            item:Remove()
+
+            client:EmitSound("ambient/water/water_spray2.wav", 75, 150, 0.5)
+        end)
+
+        return false
+    end,
+
+    OnCanRun = function(item, data)
+        local container = ix.item.instances[data and data[1]]
+        if not container then return false end
+
+        local liquid = container:GetData("currentLiquid", nil)
+        local volume = container:GetData("currentAmount", 0)
+    end
+}

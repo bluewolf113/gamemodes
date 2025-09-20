@@ -11,3 +11,4 @@ ITEM.hunger = 5
 ITEM.thirst = -0.5
 ITEM.nutrition = 0.5
 ITEM.uses = 1
+ITEM.usesAlias = {"Bite", "Bites"}
