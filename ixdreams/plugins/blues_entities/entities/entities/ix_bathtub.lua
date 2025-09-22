@@ -1,22 +1,18 @@
 AddCSLuaFile()
 
-DEFINE_BASECLASS("base_gmodentity")
-
 ENT.Type = "anim"
-ENT.PrintName = "Kitchen Sink"
+ENT.PrintName = "Bathtub"
 ENT.Category = "Helix"
-ENT.Author = "Nicholas"
 ENT.Spawnable = true
-ENT.AdminOnly =  true
-ENT.isSource = true
+ENT.isSource =  true
 
 local loopSound = "ambient/water/water_run1.wav"
 
 if SERVER then
-    util.AddNetworkString("ixSinkaToggle")
+    util.AddNetworkString("ixBathToggle")
 
     function ENT:Initialize()
-        self:SetModel("models/props_interiors/SinkKitchen01a.mdl")
+        self:SetModel("models/props_c17/FurnitureBathtub001a.mdl")
         self:PhysicsInit(SOLID_VPHYSICS)
         self:SetMoveType(MOVETYPE_VPHYSICS)
         self:SetSolid(SOLID_VPHYSICS)
@@ -41,7 +37,7 @@ if SERVER then
                 if not self.soundLoop then
                     self.soundLoop = CreateSound(self, loopSound)
                 end
-                self.soundLoop:PlayEx(0.4, 200) -- lower volume, higher pitch
+                self.soundLoop:PlayEx(0.4, 200)
             else
                 if self.soundLoop then
                     self.soundLoop:Stop()
@@ -51,9 +47,9 @@ if SERVER then
         end)
     end
 
-    net.Receive("ixSinkaToggle", function(_, client)
+    net.Receive("ixBathToggle", function(_, client)
         local ent = net.ReadEntity()
-        if IsValid(ent) and ent:GetClass() == "ix_sink_a" then
+        if IsValid(ent) and ent:GetClass() == "ix_bathtub" then
             ent:SetOn(not ent:GetNetVar("isOn", false))
         end
     end)
@@ -65,7 +61,7 @@ if CLIENT then
         local isOn = self:GetNetVar("isOn", false)
 
         options[isOn and "Turn Off" or "Turn On"] = function()
-            net.Start("ixSinkaToggle")
+            net.Start("ixBathToggle")
                 net.WriteEntity(self)
             net.SendToServer()
         end

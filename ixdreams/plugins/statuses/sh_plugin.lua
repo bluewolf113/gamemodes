@@ -177,6 +177,9 @@ ix.util.Include("statuses/sh_itx_combatstim.lua")
 ix.util.Include("statuses/sh_itx_synthoil.lua")
 ix.util.Include("statuses/sh_med_healgel.lua")
 ix.util.Include("statuses/sh_med_bandage.lua")
+ix.util.Include("statuses/sh_poisonlight.lua")
+ix.util.Include("statuses/sh_poisonheavy.lua")
+ix.util.Include("statuses/sh_mmr.lua")
 
 -- ---------------------------
 

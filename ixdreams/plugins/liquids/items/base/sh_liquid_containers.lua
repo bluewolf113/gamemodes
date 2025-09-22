@@ -220,7 +220,7 @@ ITEM.functions.CPour = {
         })
 
         if tr.Hit then
-            local decalName = "Splash.Large"
+            local decalName = "BeerSplash"
             local hitPos = tr.HitPos
             local normal = tr.HitNormal
 
@@ -298,17 +298,17 @@ ITEM.functions.EFillWater = {
     name = "Fill With Water",
     icon = "icon16/basket_put.png",
     OnRun = function(item)
-        item.player:EmitSound(ix.liquids.Get("water"):GetTransferSound())
+        item.player:EmitSound(ix.liquids.Get("waterraw"):GetTransferSound())
 
         item:SetVolume(item.capacity)
-        item:SetLiquid("water")
+        item:SetLiquid("waterraw")
 
         return false
     end,
     OnCanRun = function(item)
         if !ix.config.Get("allowMapRefills", true) then return false end
-        if !ix.liquids.Get("water") then return false end
-        if !(item:GetVolume() == 0 or (item:GetLiquid() == "water" and item:GetVolume() < item.capacity)) then return false end
+        if !ix.liquids.Get("waterraw") then return false end
+        if !(item:GetVolume() == 0 or (item:GetLiquid() == "waterraw" and item:GetVolume() < item.capacity)) then return false end
         return item.player and item.player:WaterLevel() >= 1
     end
 }
@@ -466,3 +466,58 @@ ITEM.functions.WaterPlant = {
     end
 }
 
+---
+--
+--
+ITEM.functions.DFillFromSink = {
+    name = "Fill from Faucet",
+    icon = "icon16/basket_put.png",
+    OnRun = function(item)
+        local client = item.player
+
+        local data = {}
+        data.start = client:GetShootPos()
+        data.endpos = data.start + client:GetAimVector() * ix.config.Get("lookRange", 160)
+        data.filter = function(ent)
+            return ent.isSource == true
+        end
+        local trace = util.TraceLine(data)
+
+        local sink = trace.Entity
+        if not IsValid(sink) then return false end
+
+        -- If empty, set to water
+        if not item:GetLiquid() then
+            item:SetLiquid("water")
+        end
+
+        -- Only fill if it's water
+        if item:GetLiquid() == "water" then
+            item:SetVolume(item.capacity)
+            client:EmitSound("ambient/water/water_pump.wav")
+        end
+
+        return false
+    end,
+    OnCanRun = function(item)
+        if item:GetVolume() == item.capacity then
+            return false
+        end
+
+        local client = item.player
+        local data = {}
+        data.start = client:GetShootPos()
+        data.endpos = data.start + client:GetAimVector() * ix.config.Get("lookRange", 160)
+        data.filter = function(ent)
+            return ent.isSource == true
+        end
+        local trace = util.TraceLine(data)
+
+        local ent = trace.Entity
+        if not IsValid(ent) then return false end
+
+        -- Only allow if sink is on and container is empty or already water
+        return ent:GetNetVar("isOn", false) 
+            and (not item:GetLiquid() or item:GetLiquid() == "water")
+    end
+}

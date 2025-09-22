@@ -16,7 +16,7 @@ FACTION.models = {
 
 
 -- Store default speeds so we can restore them later
-FACTION.defaultWalk = ix.config.Get("walkSpeed", 130)
+FACTION.defaultWalk = ix.config.Get("walkSpeed", 90)
 FACTION.defaultRun  = ix.config.Get("runSpeed", 235)
 
 function FACTION:OnSpawn(client, character)
