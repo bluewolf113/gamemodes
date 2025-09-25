@@ -29,7 +29,7 @@ function STATUS:OnThink(client, scaleFactor)
             client:SetHealth(math.Clamp(newHealth, 0, client:GetMaxHealth()))
         end
 
-        character:AddStatusEffect(self.uniqueID, -1)
+        character:AddStatusEffect(self.uniqueID, -0.05)
     end
 end
 

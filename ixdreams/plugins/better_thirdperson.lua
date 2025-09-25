@@ -231,10 +231,20 @@ hook.Add("CreateMove", "ThirdOTSCreateMove", function(cmd)
 	if not IsValid(fply) then return end
 	if not ix.option.Get("thirdpersonEnabled", false) then return end
 	if DisabledMoveTypes[fply:GetMoveType()] then return end
-	local tang = fply.camang and fply.camang or fply:EyeAngles()
-	vel = Vector(cmd:GetForwardMove(), cmd:GetSideMove(), cmd:GetUpMove())
-	vel:Rotate(fply:EyeAngles() - tang)
-	cmd:SetSideMove(vel.y)
-	cmd:SetForwardMove(vel.x)
-	cmd:SetUpMove(vel.z)
+
+	local tang = fply.camang or fply:EyeAngles()
+	local input = Vector(cmd:GetForwardMove(), cmd:GetSideMove(), cmd:GetUpMove())
+
+	-- Rotate input relative to camera angle
+	local delta = fply:EyeAngles() - tang
+	local rotated = input:Rotate(delta)
+
+	-- Preserve original magnitude
+	local magnitude = input:Length()
+	rotated:Normalize()
+	rotated = rotated * magnitude
+
+	cmd:SetForwardMove(rotated.x)
+	cmd:SetSideMove(rotated.y)
+	cmd:SetUpMove(rotated.z)
 end)

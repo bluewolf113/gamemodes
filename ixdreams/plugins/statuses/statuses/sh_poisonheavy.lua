@@ -45,7 +45,7 @@ if CLIENT then
 			local flash = vgui.Create("DPanel")
 			flash:SetSize(ScrW(), ScrH())
 			flash:SetBackgroundColor(Color(0, 255, 0))
-			flash:SetAlpha(100)
+			flash:SetAlpha(20)
 			flash:AlphaTo(0, 4, 0, function() flash:Remove() end)
 		end
 
