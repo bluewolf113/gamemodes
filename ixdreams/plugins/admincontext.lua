@@ -4,11 +4,6 @@ local PLUGIN = PLUGIN or {}
 PLUGIN.name = "Context Menu Options"
 PLUGIN.author = "Gary Tate"
 PLUGIN.description = "Adds several context options on players."
-PLUGIN.readme = [[
-Adds several context options on players.
-
-Support for this plugin can be found here: https://discord.gg/mntpDMU
-]]
 PLUGIN.license = [[
 The MIT License (MIT)
 Copyright (c) 2020 Gary Tate
@@ -152,14 +147,65 @@ properties.Add("ixSetDescriptionProperty", {
 			end, entity:GetCharacter():GetDescription())
 		end
 	end
+
 })
-ix.command.Add("AdminSearch", {
-    description = "Allows an admin to search a player.",
-    adminOnly = true,
-    arguments = {
-		ix.type.character
-	},
-    OnRun = function(self, client, target)
-		Schema:SearchPlayer(client, target:GetPlayer())
-	end;
+
+properties.Add("ixSetNameProperty", {
+    MenuLabel = "#Edit Name",
+    Order = 5,
+    MenuIcon = "icon16/book_edit.png",
+
+    Filter = function(self, entity, client)
+        return CAMI.PlayerHasAccess(client, "Helix - Admin Context Options", nil) and entity:IsPlayer()
+    end,
+
+    Action = function(self, entity)
+        self:MsgStart()
+            net.WriteEntity(entity)
+        self:MsgEnd()
+    end,
+
+    Receive = function(self, length, client)
+        if (CAMI.PlayerHasAccess(client, "Helix - Admin Context Options", nil)) then
+            local entity = net.ReadEntity()
+            client:RequestString("Set the character's name.", "New Name", function(text)
+                entity:GetCharacter():SetName(text)
+            end, entity:GetCharacter():GetName())
+        end
+    end
+})
+
+properties.Add("ixSetModelProperty", {
+    MenuLabel = "#Change Player Model",
+    Order = 6,
+    MenuIcon = "icon16/user_edit.png",
+
+    Filter = function(self, entity, client)
+        return CAMI.PlayerHasAccess(client, "Helix - Admin Context Options") and entity:IsPlayer()
+    end,
+
+    Action = function(self, entity)
+        self:MsgStart()
+            net.WriteEntity(entity)
+        self:MsgEnd()
+    end,
+
+    Receive = function(self, _, client)
+        local entity = net.ReadEntity()
+        if not CAMI.PlayerHasAccess(client, "Helix - Admin Context Options") then return end
+
+        local character = entity:GetCharacter()
+        if not character then 
+            client:NotifyLocalized("Failed to retrieve character data.")
+            return
+        end
+
+        client:RequestString("Set player's model", "New Model Path", function(modelPath)
+            if modelPath and modelPath ~= "" then
+                character:SetModel(modelPath) -- Persist model change in Helix character data
+            else
+                client:NotifyLocalized("Invalid model path.")
+            end
+        end, entity:GetModel())
+    end
 })

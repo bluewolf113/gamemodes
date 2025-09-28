@@ -1,7 +1,7 @@
 ITEM.name = "Dollar Bill"
 ITEM.description = "Test."
 ITEM.category = "Currency"
-ITEM.model = "models/illusion/eftcontainers/alyonka.mdl"
+ITEM.model = "models/illusion/eftcontainers/dollar.mdl"
 ITEM.maxStacks = 25
 
 function ITEM:GetMaterial()

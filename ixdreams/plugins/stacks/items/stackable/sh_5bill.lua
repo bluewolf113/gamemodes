@@ -1,8 +1,9 @@
 ITEM.name = "Five Dollar Bill"
 ITEM.description = "Test."
 ITEM.category = "Currency"
-ITEM.model = "models/illusion/eftcontainers/alyonka.mdl"
+ITEM.model = "models/illusion/eftcontainers/dollar.mdl"
 ITEM.maxStacks = 25
+ITEM.stackName = "Bundle"
 
 function ITEM:GetMaterial()
     return "models/XQM/WoodTexture_1"
