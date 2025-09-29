@@ -54,26 +54,27 @@ ITEM.functions.combine = {
             return false
         end
 
-        -- read the actual rounds from the mag’s instance data
+        -- Read the actual rounds from the magazine item
         local rounds = targetItem:GetData("rounds", targetItem.maxAmmo or 0)
 
         if rounds > 0 then
-            -- save mag info into the weapon item
+            -- Save magazine info into the weapon item
             item:SetData("magazine", {
                 uniqueID = targetItem.uniqueID,
                 ammo = rounds
             })
 
-            -- set the SWEP’s clip to match the mag’s rounds
+            -- Give ammo to the player instead of setting clip
             local weapon = client:GetWeapon(item.class)
             if IsValid(weapon) then
-                weapon:SetClip1(rounds)
+                local ammoType = weapon:GetPrimaryAmmoType()
+                if ammoType and ammoType >= 0 then
+                    client:GiveAmmo(rounds, ammoType, true)
+                end
             end
-
-            client:Notify("Magazine inserted with " .. rounds .. " rounds.")
             targetItem:Remove()
         else
-            client:Notify("This magazine is empty.")
+            client:Notify("")
         end
 
         return false

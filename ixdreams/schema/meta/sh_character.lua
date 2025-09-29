@@ -7,3 +7,10 @@ local CHAR = ix.meta.character
 function CHAR:IsPolice()
 	return self:GetFaction() == FACTION_POLICE
 end
+
+
+-- for debug purposes now
+function playerMeta:IsCombine()
+	local faction = self:Team()
+	return faction == FACTION_MPF or faction == FACTION_OTA or FACTION_POLICE
+end

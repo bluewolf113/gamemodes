@@ -16,21 +16,21 @@ ITEM.bodyGroups = {
 }
 
 ITEM.allowedModels = {
-    "models/willardnetworks/citizens/female_01.mdl",
-    "models/willardnetworks/citizens/female_02.mdl",
-    "models/willardnetworks/citizens/female_03.mdl",
-    "models/willardnetworks/citizens/female_04.mdl",
-    "models/willardnetworks/citizens/female_06.mdl",
-    "models/willardnetworks/citizens/female_07.mdl",
-    
-    "models/willardnetworks/citizens/male01.mdl",
-    "models/willardnetworks/citizens/male02.mdl",
-    "models/willardnetworks/citizens/male03.mdl",
-    "models/willardnetworks/citizens/male04.mdl",
-    "models/willardnetworks/citizens/male05.mdl",
-    "models/willardnetworks/citizens/male06.mdl",
-    "models/willardnetworks/citizens/male07.mdl",
-    "models/willardnetworks/citizens/male08.mdl",
-    "models/willardnetworks/citizens/male09.mdl",
-    "models/willardnetworks/citizens/male10.mdl",
+    "models/humans/pandafishizens/female_01.mdl",
+    "models/humans/pandafishizens/female_02.mdl",
+    "models/humans/pandafishizens/female_03.mdl",
+    "models/humans/pandafishizens/female_04.mdl",
+    "models/humans/pandafishizens/female_06.mdl",
+    "models/humans/pandafishizens/female_07.mdl",
+
+    "models/humans/pandafishizens/male_01.mdl",
+    "models/humans/pandafishizens/male_02.mdl",
+    "models/humans/pandafishizens/male_03.mdl",
+    "models/humans/pandafishizens/male_04.mdl",
+    "models/humans/pandafishizens/male_05.mdl",
+    "models/humans/pandafishizens/male_06.mdl",
+    "models/humans/pandafishizens/male_07.mdl",
+    "models/humans/pandafishizens/male_08.mdl",
+    "models/humans/pandafishizens/male_09.mdl",
+    "models/humans/pandafishizens/male_10.mdl",
 }

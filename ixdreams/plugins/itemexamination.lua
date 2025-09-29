@@ -1,12 +1,15 @@
 PLUGIN.name = "Custom Item Examination"
-PLUGIN.author = "Nicholas"
+PLUGIN.author = "blue"
 PLUGIN.description = "Allows items to define unique examination descriptions."
 
 if SERVER then
     function PLUGIN:GenerateExaminedDescription(item, player)
         if not item.isExamineable then return end
 
-        local charID = player:GetCharacter():GetID()
+        local char = player:GetCharacter()
+        if not char then return end
+
+        local charID = char:GetID()
         local uniqueKey = "examinedDescription_" .. charID
 
         if not item:GetData(uniqueKey) then
@@ -15,7 +18,7 @@ if SERVER then
             -- Attribute-based descriptions
             if item.attributeDescriptions then
                 for attr, descList in pairs(item.attributeDescriptions) do
-                    if player:GetCharacter():GetAttribute(attr, 0) == 1 then
+                    if char:GetAttribute(attr, 0) == 1 then
                         table.insert(possibleDescriptions, descList[math.random(#descList)])
                     end
                 end
@@ -40,7 +43,10 @@ if CLIENT then
     function PLUGIN:PopulateItemTooltip(tooltip, item)
         if not item.isExamineable then return end
 
-        local charID = LocalPlayer():GetCharacter():GetID()
+        local char = LocalPlayer():GetCharacter()
+        if not char then return end
+
+        local charID = char:GetID()
         local uniqueKey = "examinedDescription_" .. charID
         local examinedDesc = item:GetData(uniqueKey)
 
@@ -64,18 +70,22 @@ function PLUGIN:InitializedPlugins()
                 OnRun = function(item)
                     local owner = item:GetOwner()
                     if IsValid(owner) then
-                        PLUGIN:GenerateExaminedDescription(item, owner)
+                        -- Use self instead of PLUGIN
+                        self:GenerateExaminedDescription(item, owner)
                     end
-                    return false
+                    return false -- don’t consume the item
                 end,
                 OnCanRun = function(item)
                     local owner = item:GetOwner()
                     if not IsValid(owner) then return false end
-                    local charID = owner:GetCharacter():GetID()
+
+                    local char = owner:GetCharacter()
+                    if not char then return false end
+
+                    local charID = char:GetID()
                     local uniqueKey = "examinedDescription_" .. charID
                     return not item:GetData(uniqueKey)
                 end
             }
         end
     end
-end

@@ -7,15 +7,25 @@ ix.menu.list = ix.menu.list or {}
 
 --OVERRIDE 
 if (CLIENT) then
-	function ix.menu.Open(options, entity)
-		if (IsValid(ix.menu.panel)) then
-			return false
-		end
-	
-		ix.menu.AddToList(options, entity)
-	
-		return true
-	end
+    -- Backup the original Helix menu function if not already saved
+    ix.menu.OpenDefault = ix.menu.OpenDefault or ix.menu.Open
+
+    function ix.menu.Open(options, entity)
+        -- Prevent opening multiple menus
+        if IsValid(ix.menu.panel) then
+            return false
+        end
+
+        -- If the entity is a player, use Helix's default menu
+        if IsValid(entity) and entity:IsPlayer() then
+            return ix.menu.OpenDefault(options, entity)
+        end
+
+        -- Otherwise, use your custom menu logic
+        ix.menu.AddToList(options, entity)
+
+        return true
+    end
 
 	surface.CreateFont("ixItemMenuFont", {
 		font = "Consolas",
