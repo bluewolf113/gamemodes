@@ -7,12 +7,11 @@ end
 
 --
 -- for debug purposes now
-function playerMeta:IsCombine()
-	local faction = self:Team()
-	return faction == FACTION_MPF or faction == FACTION_OTA or FACTION_POLICE
+function PLAYER:IsCombine()
+	return self:GetFaction() == FACTION_MPF or faction == FACTION_OTA or FACTION_POLICE
 end
 
-function playerMeta:IsDispatch()
+function PLAYER:IsDispatch()
 	local name = self:Name()
 	local faction = self:Team()
 	local bStatus = faction == FACTION_OTA

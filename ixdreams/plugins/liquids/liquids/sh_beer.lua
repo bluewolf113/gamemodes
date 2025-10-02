@@ -1,3 +1,4 @@
+
 LIQUID.name = "Beer"
 LIQUID.color = Color(218, 165, 32, 255) -- Golden amber tone
 LIQUID.potency = 1
@@ -22,8 +23,9 @@ function LIQUID:OnConsume(client, volume)
     char:AddStatusEffect("drunk", drunkennessAdded)
 
     -- Optional feedback
-    client:ChatPrint("Your thirst has been reduced by " .. math.floor(thirstRestored) .. ".")
-    if potencyMultiplier > 0 then
-        client:ChatPrint("You feel the effects of alcohol increasing by " .. math.floor(drunkennessAdded) .. "%.")
-    end
+    --client:ChatPrint("Your thirst has been reduced by " .. math.floor(thirstRestored) .. ".")
+    --if potencyMultiplier > 0 then
+        --client:ChatPrint("You feel the effects of alcohol increasing by " .. math.floor(drunkennessAdded) .. "%.")
+    --end
 end
+

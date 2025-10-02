@@ -279,20 +279,17 @@ if SERVER then
     local function SplitRecipientsByKnowledge(speaker, text, lang, range)
         local pos = speaker:GetPos()
         local rangeSqr = range * range
-        local knows = {}
-        local dont  = {}
+        local knows, dont = {}, {}
 
         for _, ply in ipairs(player.GetAll()) do
-            if IsValid(ply) and ply:Alive() then
-                if ply:GetPos():DistToSqr(pos) <= rangeSqr then
-                    local tch = ply:GetCharacter()
-                    if tch then
-                        local langs = tch:GetData("languages", {})
-                        if langs[lang] then
-                            knows[#knows+1] = ply
-                        else
-                            dont[#dont+1] = ply
-                        end
+            if IsValid(ply) and ply:Alive() and ply:GetPos():DistToSqr(pos) <= rangeSqr then
+                local tch = ply:GetCharacter()
+                if tch then
+                    local langs = tch:GetData("languages", {})
+                    if langs[lang] then
+                        knows[#knows+1] = ply
+                    else
+                        dont[#dont+1] = ply
                     end
                 end
             end
@@ -304,60 +301,52 @@ if SERVER then
     function PLUGIN:PlayerSay(client, text, teamChat)
         if teamChat then return end
         if not IsValid(client) then return end
+
         local char = client:GetCharacter()
         if not char then return end
 
         local lang = char:GetData("activeLanguage")
-        if not lang or lang == "" then return end
+        if not lang or lang == "" then
+            -- No active language: let Helix handle default IC/W/Y
+            return
+        end
 
         local lower = string.lower(text or "")
 
-        -- Whisper (/w ...)
+        -- Whisper
         if string.StartWith(lower, "/w ") or string.StartWith(lower, "!w ") then
             local msg = string.sub(text, 4)
             if msg == "" then return "" end
             local range = ix.config.Get("chatRange", 90)
             local knows, dont = SplitRecipientsByKnowledge(client, msg, lang, range)
-            if #knows > 0 then
-                ix.chat.Send(client, "lang_w", msg, knows, nil, { lang = lang, knows = true })
-            end
-            if #dont > 0 then
-                ix.chat.Send(client, "lang_w", "", dont, nil, { lang = lang, knows = false })
-            end
-            return ""
+            if #knows > 0 then ix.chat.Send(client, "lang_w", msg, knows, nil, { lang = lang, knows = true }) end
+            if #dont  > 0 then ix.chat.Send(client, "lang_w", "",  dont,  nil, { lang = lang, knows = false }) end
+            return "" -- swallow default whisper
         end
 
-        -- Yell (/y ...)
+        -- Yell
         if string.StartWith(lower, "/y ") or string.StartWith(lower, "!y ") then
             local msg = string.sub(text, 4)
             if msg == "" then return "" end
             local range = ix.config.Get("chatRange", 560)
             local knows, dont = SplitRecipientsByKnowledge(client, msg, lang, range)
-            if #knows > 0 then
-                ix.chat.Send(client, "lang_y", msg, knows, nil, { lang = lang, knows = true })
-            end
-            if #dont > 0 then
-                ix.chat.Send(client, "lang_y", "", dont, nil, { lang = lang, knows = false })
-            end
-            return ""
+            if #knows > 0 then ix.chat.Send(client, "lang_y", msg, knows, nil, { lang = lang, knows = true }) end
+            if #dont  > 0 then ix.chat.Send(client, "lang_y", "",  dont,  nil, { lang = lang, knows = false }) end
+            return "" -- swallow default yell
         end
 
-        -- Normal IC (no slash at start) only
+        -- Plain IC (no slash): replace with language IC
         if not string.StartWith(lower, "/") and not string.StartWith(lower, "!") then
             local msg = text
             if msg == "" then return "" end
             local range = ix.config.Get("chatRange", 280)
             local knows, dont = SplitRecipientsByKnowledge(client, msg, lang, range)
-            if #knows > 0 then
-                ix.chat.Send(client, "lang", msg, knows, nil, { lang = lang, knows = true })
-            end
-            if #dont > 0 then
-                ix.chat.Send(client, "lang", "", dont, nil, { lang = lang, knows = false })
-            end
-            return ""
+            if #knows > 0 then ix.chat.Send(client, "lang", msg, knows, nil, { lang = lang, knows = true }) end
+            if #dont  > 0 then ix.chat.Send(client, "lang", "",  dont,  nil, { lang = lang, knows = false }) end
+            return "" -- swallow default IC
         end
 
-        -- Any other slash-prefixed text -> let Helix handle as commands.
+        -- Any other slash-prefixed text => let Helix handle commands
     end
 end
 

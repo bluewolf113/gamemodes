@@ -10,7 +10,6 @@ end
 
 
 -- for debug purposes now
-function playerMeta:IsCombine()
-	local faction = self:Team()
-	return faction == FACTION_MPF or faction == FACTION_OTA or FACTION_POLICE
+function CHAR:IsCombine()
+	return self:GetFaction() == FACTION_MPF or faction == FACTION_OTA or FACTION_POLICE
 end

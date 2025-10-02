@@ -18,6 +18,6 @@ function LIQUID:OnConsume(client, volume)
     char:AddNeed("thirst", thirstRestored)
 
     -- Optional feedback
-    client:ChatPrint("Your thirst has increased by " .. math.floor(thirstRestored) .. ".")
+    --client:ChatPrint("Your thirst has increased by " .. math.floor(thirstRestored) .. ".")
 end
 

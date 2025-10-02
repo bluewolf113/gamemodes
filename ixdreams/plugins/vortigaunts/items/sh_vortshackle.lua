@@ -41,6 +41,17 @@ ITEM.functions.Shackle = {
             character:SetClass(CLASS_BIOTIC)
             target:SetModel("models/vortigaunt_slave.mdl") -- Replace with your actual shackled model path
             target:Notify("You have been shackled.")
+            local stripList = {
+                ["ix_nightvision"] = true,
+                ["ix_vortheal"]    = true,
+                ["ix_vortbeam"]    = true
+            }
+            for _, wep in ipairs(target:GetWeapons()) do
+                local class = wep:GetClass()
+                if stripList[class] then
+                    target:StripWeapon(class)
+                end
+            end
             itemTable:Remove()
         end, 5, function()
             client:SetAction()

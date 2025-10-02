@@ -243,4 +243,14 @@ function PLUGIN:SetupActs()
 			{"rescue_getup"}
 		},
 	})
+
+	---
+	--STALKERS
+	---
+	ix.act.Register("Console", {"stalker"}, {
+		start = {"console_work_pre"},
+		sequence = {"console_work_looping"},
+		finish = {"console_work_post"},
+		}
+	)
 end

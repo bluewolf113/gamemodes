@@ -95,6 +95,7 @@ end
                     end
                 end)
             end
+        end
 
         -- ✅ Arming bomb instantly
         elseif other.uniqueID == "testexplosion" and not bombed then

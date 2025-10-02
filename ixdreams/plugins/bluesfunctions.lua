@@ -4,28 +4,7 @@ PLUGIN.name = "Blue's Stuff"
 PLUGIN.description = "Stuff blue adds that he's always wanted."
 PLUGIN.author = "Blue and Copilot"
 
---hopefully this works, copilot...
-if CLIENT then
-    -- Modify the tooltip distance settings
-    function PLUGIN:InitializedSchema()
-        -- Override the tooltip visibility range
-        ix.config.Set("maximumTooltipDistance", 512) -- Adjust value as needed
-    end
-
-    -- Hook into Helix’s tooltip logic
-    function PLUGIN:ShouldDrawEntityInfo(entity)
-        if not IsValid(entity) then return false end
-
-        local client = LocalPlayer()
-        local distance = client:GetPos():Distance(entity:GetPos())
-
-        -- Increase default tooltip visibility range
-        return distance <= 512 -- Modify this value as needed
-    end
-end
-
 --------player menu stuff
-
 
 PLUGIN.name = "Player Recognition & Nicknames"
 PLUGIN.author = "Your Name"
@@ -145,6 +124,7 @@ end
 ---
 --CHECK INVENTORY FUNCTION
 ---
+
 ix.command.Add("charcheckinv", {
 	adminOnly = true,
 	arguments = {
@@ -317,3 +297,22 @@ ix.command.Add("SetItemDescription", {
         client:Notify("Item description updated.")
     end
 })
+
+--
+-- WORLD MAP MENU
+--
+
+function PLUGIN:PopulateHelpMenu(tabs)
+    tabs["map"] = function(container)
+		local htmlPanel = container:Add("DHTML")
+		htmlPanel:Dock(FILL)
+		htmlPanel:OpenURL("https://www.google.com/maps/d/viewer?mid=1P-EvVVkg8IMyQ-pAdTwLUuvShoC7U70&ll=-3.81666561775622e-14%2C0&z=1") -- Replace with your desired URL
+		htmlPanel:SetWide(container:GetWide())
+		htmlPanel:SetTall(container:GetTall())
+	
+		-- Adjust size when the menu resizes
+		container.OnSizeChanged = function(_, newWidth, newHeight)
+			htmlPanel:SetSize(newWidth, newHeight)
+		end
+	end
+end

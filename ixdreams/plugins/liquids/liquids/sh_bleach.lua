@@ -22,8 +22,8 @@ function LIQUID:OnConsume(client, volume)
     char:AddStatusEffect("poison_heavy", poisonAdded)
 
     -- Optional feedback
-    client:ChatPrint("Your thirst has been reduced by " .. math.floor(thirstRestored) .. ".")
-    if potencyMultiplier > 0 then
-        client:ChatPrint("You feel the effects of alcohol increasing by " .. math.floor(poisonAdded) .. "%.")
-    end
+    --client:ChatPrint("Your thirst has been reduced by " .. math.floor(thirstRestored) .. ".")
+    --if potencyMultiplier > 0 then
+        --client:ChatPrint("You feel the effects of alcohol increasing by " .. math.floor(poisonAdded) .. "%.")
+    --end
 end
