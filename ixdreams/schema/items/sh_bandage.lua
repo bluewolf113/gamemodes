@@ -6,6 +6,14 @@ ITEM.description = "A small roll of hand-made gauze."
 ITEM.category = "Medical"
 ITEM.uses = 5
 
+function ITEM:PopulateTooltip(tooltip)
+    local uses = self:GetData("uses", self.uses or 0)
+
+    local row = tooltip:AddRowAfter("description", "uses")
+    row:SetText("Uses left: " .. uses)
+    row:SizeToContents()
+end
+
 ITEM.functions.Use = {
 	Name = "Use",
 	OnRun = function(item)
@@ -17,7 +25,8 @@ ITEM.functions.Use = {
 		client:EmitSound("physics/plaster/ceilingtile_break1.wav", 75, 150, 0.5)
 
 		character:AddStatusEffect("med_bandage", 100)
-        character:RemoveEffect("bleeding")
+        character:RemoveStatusEffect("bleeding")
+        character:RemoveStatusEffect("bleedingheavy")
 		
 		bShouldRemoveItem = item:ConsumeUse()
 		

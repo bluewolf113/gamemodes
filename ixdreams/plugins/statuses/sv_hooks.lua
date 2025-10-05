@@ -88,7 +88,7 @@ if SERVER then
 						
 						if charStatusScale <= scaleMin then
 							character:RemoveStatusEffect(uniqueID)
-						else
+						elseif status.OnThink then
 							status:OnThink(client, charStatusScale)
 						end
 					end

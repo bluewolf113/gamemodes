@@ -180,6 +180,15 @@ ix.util.Include("statuses/sh_med_bandage.lua")
 ix.util.Include("statuses/sh_poisonlight.lua")
 ix.util.Include("statuses/sh_poisonheavy.lua")
 ix.util.Include("statuses/sh_mmr.lua")
+ix.util.Include("statuses/sh_bleed.lua")
+ix.util.Include("statuses/sh_bleedheavy.lua")
+ix.util.Include("statuses/sh_leftarmbroken.lua")
+ix.util.Include("statuses/sh_rightarmbroken.lua")
+ix.util.Include("statuses/sh_leftlegbroken.lua")
+ix.util.Include("statuses/sh_rightlegbroken.lua")
+ix.util.Include("statuses/sh_fever.lua")
+ix.util.Include("statuses/sh_foodpoisoning.lua")
+ix.util.Include("statuses/sh_nausea.lua")
 
 -- ---------------------------
 
@@ -275,3 +284,30 @@ ix.command.Add("PlyCheckStatuses", {
 		end
 	end
 })
+
+
+---
+--INJURIES
+---
+
+function PLUGIN:EntityTakeDamage(target, dmgInfo)
+    if not IsValid(target) or not target:IsPlayer() then return end
+
+    local char = target:GetCharacter()
+    if not char then
+        print("No character found for", target) -- Debug
+        return
+    end
+
+    local hg = target:LastHitGroup() or HITGROUP_GENERIC
+    local dt = dmgInfo:GetDamageType()
+
+    for id, def in pairs(PLUGIN.statuses or {}) do
+        if def.condition and def.condition(target, dmgInfo, hg, dt) then
+            local duration = 100
+            char:SetStatusEffect(id, duration)
+            print("Applied status:", id, "Duration:", duration) -- Debug
+            break -- Apply only one status effect per hit
+        end
+    end
+end
