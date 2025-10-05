@@ -7,6 +7,7 @@ STATUS.uniqueID = "med_healgel"
 function STATUS:OnApply(client, scaleFactor)
 	net.Start("ix_DoMedGelEffects")
 	net.Send(client)
+	ply:SetNetVar("bleeding", nil)
 end
 
 function STATUS:OnRemove(client)

@@ -17,6 +17,7 @@ ITEM.functions.Use = {
 		client:EmitSound("physics/plaster/ceilingtile_break1.wav", 75, 150, 0.5)
 
 		character:AddStatusEffect("med_bandage", 100)
+        character:RemoveEffect("bleeding")
 		
 		bShouldRemoveItem = item:ConsumeUse()
 		
