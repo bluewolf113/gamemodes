@@ -158,33 +158,45 @@ end
 
 -- Whether or not a player a player has any abilities over the door, such as locking.
 function PLUGIN:CanPlayerAccessDoor(client, door, access)
-	local faction = door:GetNetVar("faction")
+    local faction = door:GetNetVar("faction")
 
-	-- If the door has a faction set which the client is a member of, allow access.
-	if (faction and client:Team() == faction) then
-		return true
-	end
+    -- Faction check
+    if (faction and client:Team() == faction) then
+        return true
+    end
 
-	local class = door:GetNetVar("class")
+    local class = door:GetNetVar("class")
+    local classData = ix.class.list[class]
+    local charClass = client:GetCharacter():GetClass()
+    local classData2 = ix.class.list[charClass]
 
-	-- If the door has a faction set which the client is a member of, allow access.
-	local classData = ix.class.list[class]
-	local charClass = client:GetCharacter():GetClass()
-	local classData2 = ix.class.list[charClass]
+    -- Class check
+    if (class and classData and classData2) then
+        if (classData.team) then
+            if (classData.team != classData2.team) then
+                return false
+            end
+        else
+            if (charClass != class) then
+                return false
+            end
+        end
 
-	if (class and classData and classData2) then
-		if (classData.team) then
-			if (classData.team != classData2.team) then
-				return false
-			end
-		else
-			if (charClass != class) then
-				return false
-			end
-		end
+        return true
+    end
 
-		return true
-	end
+    -- Item keyID matches door name
+    local doorName = door:GetNetVar("name", door:GetName())
+    local inventory = client:GetCharacter():GetInventory()
+
+    for _, item in pairs(inventory:GetItems()) do
+        local keyID = item:GetData("keyID", "")
+        if (keyID != "" and string.lower(keyID) == string.lower(doorName)) then
+            return true
+        end
+    end
+
+    return false
 end
 
 function PLUGIN:PostPlayerLoadout(client)

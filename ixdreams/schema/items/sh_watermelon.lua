@@ -1,4 +1,4 @@
-ITEM.name = "Watermelon"
+ITEM.name = "Test"
 ITEM.model = Model("models/props_junk/watermelon01.mdl")
 ITEM.width = 3
 ITEM.height = 3

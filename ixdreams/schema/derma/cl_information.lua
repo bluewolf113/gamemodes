@@ -289,6 +289,7 @@ function PANEL:Update(character)
 		self.money:SetLabelText(L("money"))
 		self.money:SetText(ix.currency.Get(character:GetMoney()))
 		self.money:SizeToContents()
+		self.money:SetVisible(false)
 	end
 
 	hook.Run("UpdateCharacterInfo", self.characterInfo, character)

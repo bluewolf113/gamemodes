@@ -1,7 +1,7 @@
 
 local PLUGIN = PLUGIN
 
-PLUGIN.name = "New Doors"
+PLUGIN.name = "Doors"
 PLUGIN.author = "Chessnut"
 PLUGIN.description = "A simple door system."
 

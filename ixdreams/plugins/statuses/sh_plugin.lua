@@ -311,3 +311,35 @@ function PLUGIN:EntityTakeDamage(target, dmgInfo)
         end
     end
 end
+
+--
+--disease spread
+---
+function PLUGIN:PlayerStatusSpread(originClient, statusID, radius)
+    if not IsValid(originClient) or not originClient:IsPlayer() then return end
+    if not statusID or not self:StatusExists(statusID) then return end
+
+    local statusDef = self:GetStatusTable(statusID)
+    if not statusDef then return end
+
+    local originPos = originClient:GetPos()
+    local radius = radius or 256
+    local spreadScale = 1 -- fixed spread scale
+    local scaleMin = statusDef.scaleMin or 0
+
+    for _, ply in ipairs(ents.FindInSphere(originPos, radius)) do
+        if ply:IsPlayer() and ply != originClient and ply:Alive() then
+            local char = ply:GetCharacter()
+            if char then
+                local currentScale = char:GetStatusEffect(statusID) or 0
+
+                -- Only apply if status is not active or below minimum
+                if currentScale <= scaleMin then
+                    if math.random(4) == 1 then
+                        char:SetStatusEffect(statusID, spreadScale)
+                    end
+                end
+            end
+        end
+    end
+end

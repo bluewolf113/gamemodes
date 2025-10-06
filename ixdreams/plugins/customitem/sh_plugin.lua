@@ -74,18 +74,23 @@ ix.command.Add("CreateCustomWeapon", {
 })
 
 ix.command.Add("CreateCustomKey", {
-	description = "@cmdCreateCustomKey",
-	superAdminOnly = true,
-	arguments = {
-		ix.type.string,
-		ix.type.string,
-		ix.type.string
-	},
-	OnRun = function(self, client, name, model, description)
-		client:GetCharacter():GetInventory():Add("customkey", 1, {
-			name = name,
-			model = model,
-			description = description
-		})
-	end
+    description = "@cmdCreateCustomKey",
+    superAdminOnly = true,
+    arguments = {
+        ix.type.string, -- name
+        ix.type.string, -- description
+        ix.type.string, -- keyID
+        bit.bor(ix.type.string, ix.type.optional) -- optional model
+    },
+    argumentNames = {"name", "description", "keyID", "model (optional)"},
+    OnRun = function(self, client, name, description, keyID, model)
+        client:GetCharacter():GetInventory():Add("customkey", 1, {
+            name = name,
+            description = description,
+            keyID = keyID,
+            model = model or "models/items/keys_001.mdl" -- fallback model
+        })
+    end
 })
+
+

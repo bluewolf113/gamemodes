@@ -71,43 +71,41 @@ end
 
 function SWEP:PrimaryAttack()
 	local time = ix.config.Get("doorLockTime", 1)
-	local delay = math.max(time, 1)
+	local time2 = math.max(time, 1)
 
-	self:SetNextPrimaryFire(CurTime() + delay)
-	self:SetNextSecondaryFire(CurTime() + delay)
+	self:SetNextPrimaryFire(CurTime() + time2)
+	self:SetNextSecondaryFire(CurTime() + time2)
 
-	if not IsFirstTimePredicted() then return end
-	if CLIENT then return end
+	if (!IsFirstTimePredicted()) then
+		return
+	end
+
+	if (CLIENT) then
+		return
+	end
 
 	local data = {}
-	data.start = self.Owner:GetShootPos()
-	data.endpos = data.start + self.Owner:GetAimVector() * 96
-	data.filter = self.Owner
-
+		data.start = self.Owner:GetShootPos()
+		data.endpos = data.start + self.Owner:GetAimVector()*96
+		data.filter = self.Owner
 	local entity = util.TraceLine(data).Entity
-	if not IsValid(entity) or (not entity:IsDoor() and not entity:IsVehicle()) then return end
 
-	local char = self.Owner:GetCharacter()
-	if not char then return end
+	--[[
+		Locks the entity if the contiditon fits:
+			1. The entity is door and client has access to the door.
+			2. The entity is vehicle and the "owner" variable is same as client's character ID.
+	--]]
+	if (IsValid(entity) and
+		(
+			(entity:IsDoor() and entity:CheckDoorAccess(self.Owner)) or
+			(entity:IsVehicle() and entity.CPPIGetOwner and entity:CPPIGetOwner() == self.Owner)
+		)
+	) then
+		self.Owner:SetAction("@locking", time, function()
+			self:ToggleLock(entity, true)
+		end)
 
-	local inv = char:GetInventory()
-	if not inv then return end
-
-	-- Get the entity's title
-	local targetName = entity:GetNetVar("title", "")
-	if targetName == "" and entity.GetDoorName then
-		targetName = entity:GetDoorName() or ""
-	end
-	if targetName == "" then return end
-
-	-- Scan inventory for matching key
-	for _, item in pairs(inv:GetItems()) do
-		if item.isKey and item.name and item.name:lower() == targetName:lower() then
-			self.Owner:SetAction("@locking", time, function()
-				self:ToggleLock(entity, true)
-			end)
-			return
-		end
+		return
 	end
 end
 
@@ -201,4 +199,3 @@ function SWEP:SecondaryAttack()
 		return
 	end
 end
-
