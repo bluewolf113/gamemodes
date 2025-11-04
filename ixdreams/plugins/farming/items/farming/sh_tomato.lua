@@ -1,5 +1,5 @@
-ITEM.name = "Tomato Seeds"
-ITEM.model = Model("models/props_lab/box01a.mdl")
+ITEM.name = "Tomato"
+ITEM.model = Model("models/ug_imports/foodnhouseholditems/tomato.mdl")
 ITEM.description = "A tomato seed."
 ITEM.category = 'Seeds'
 ITEM.cost = 2

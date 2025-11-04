@@ -40,7 +40,7 @@ function PLUGIN:EnterDownedState(client)
     client:SetNetVar("ixDowned", true)
     client:SetMoveType(MOVETYPE_NONE)
     
-    client:ConCommand("say bro")
+    ix.command.Run(client, "ActDown", {2})
 
     net.Start("ixDownedState")
     net.WriteEntity(client)
@@ -92,3 +92,9 @@ ix.command.Add("Revive", {
         target:ChatPrint("You have been revived.")
     end
 })
+
+function PLUGIN:PlayerBindPress(client, bind, bPressed)
+    if (bind:find("+jump") and bPressed and client:GetNetVar("ixDowned", true)) then
+		return false
+	end
+end

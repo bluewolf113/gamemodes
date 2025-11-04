@@ -316,3 +316,29 @@ function PLUGIN:PopulateHelpMenu(tabs)
 		end
 	end
 end
+
+
+ix.command.Add("CharwWipeInventory", {
+    description = "Completely removes all items from a player's inventory.",
+    adminOnly = true,
+    arguments = {ix.type.player},
+
+    OnRun = function(self, client, target)
+        local char = target:GetCharacter()
+        if not char then
+            return client:Notify("Target has no character loaded.")
+        end
+
+        local inv = char:GetInventory()
+        if not inv then
+            return client:Notify("Target has no inventory.")
+        end
+
+        for _, item in pairs(inv:GetItems()) do
+            inv:Remove(item.id)
+        end
+
+        client:Notify("You wiped " .. target:Name() .. "'s inventory.")
+        target:Notify("Your inventory has been wiped by an administrator.")
+    end
+})

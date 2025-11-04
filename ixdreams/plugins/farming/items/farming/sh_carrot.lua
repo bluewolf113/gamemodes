@@ -1,11 +1,11 @@
 -- THIS IS AN EXAMPLE ITEM
-ITEM.name = "Potato"
-ITEM.model = Model("models/foodnhouseholditems/potato.mdl")
+ITEM.name = "Carrot"
+ITEM.model = Model("models/ug_imports/foodnhouseholditems/carrot.mdl")
 ITEM.category = "Food"
-ITEM.description = "A potato itself, that can be planted as a seed."
+ITEM.description = "wow."
 ITEM.cost = 2
-ITEM.seedclass = "potato"
-ITEM.product = "flashlight"
+ITEM.seedclass = "carrot"
+ITEM.product = "carrot"
 ITEM.plantName = "Potato Plant"
 
 ITEM.growmodels = {
