@@ -51,7 +51,7 @@ ix.config.Add("FreelookBlockFire", true, "Shot blocking while turning.", nil, {
 })
 
 ix.option.Add("FreelookEnabled", ix.type.bool, true, {
-	category = PLUGIN.name,
+	category = "Appearance",
     hidden = isHidden
 })
 

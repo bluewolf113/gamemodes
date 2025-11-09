@@ -1,149 +1,188 @@
-PLUGIN.name = "Spawn Menu: Items"; 
-PLUGIN.author = "Rune Knight";
-PLUGIN.description = "Adds a tab to the spawn menu which players can use to spawn items.";
-PLUGIN.license = [[Copyright 2021 Rune Knight
-
-This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.]];
-
---[[
-	STEAM: https://steamcommunity.com/profiles/76561198028996329/
-	DISCORD: Rune Knight#5972
-]]
-
+PLUGIN.name = "Item Spawn Menu"
+PLUGIN.author = "Rune Knight & Khall"
+PLUGIN.description = "Adds a tab to the spawn menu for item spawning and the possibility to undo them."
 
 CAMI.RegisterPrivilege({
-	Name = "Spawn Menu: Items - Spawning",
-	MinAccess = "superadmin"
+    Name = "Item Spawn Menu - Spawning",
+    MinAccess = "admin"
 })
 
-function PLUGIN:GetExpectedIcon( s )
-	local i = {
-		["Ammunition"] = "icon16/tab.png", -- :shrug:
-		["Clothing"] = "icon16/user_suit.png",
-		["Consumables"] = "icon16/pill.png",
-		["Medical"] = "icon16/heart.png",
-		["misc"] = "icon16/error.png",
-		["Permits"] = "icon16/note.png",
-		["Storage"] = "icon16/package.png",
-		["Weapons"] = "icon16/gun.png",
-
-	};
-	return hook.Run( "GetIconsForSpawnMenuItems", s ) or i[s] or "icon16/folder.png";
+function PLUGIN:GetCategoryIcon(category)
+    local icons = {
+        ["Ammunition"] = "icon16/tab.png",
+        ["Clothing"] = "icon16/user_suit.png",
+        ["Consumables"] = "icon16/pill.png",
+        ["Medical"] = "icon16/heart.png",
+        ["misc"] = "icon16/error.png",
+        ["Permits"] = "icon16/note.png",
+        ["Storage"] = "icon16/package.png",
+        ["Weapons"] = "icon16/gun.png",
+		["Literature"] = "objectiveicons/job.png",
+    }
+    
+    return hook.Run("GetItemSpawnMenuIcons", category) or icons[category] or "icon16/folder.png"
 end
 
-if( SERVER ) then
-	util.AddNetworkString( "spawnmenuspawnitem" );
+if SERVER then
+    util.AddNetworkString("ItemSpawn_Request")
+    util.AddNetworkString("ItemGive_Request")
 
-	ix.log.AddType( "spawnmenuspawnitem", function( client, name )
-		return string.format( "%s has spawned \"%s\".", client:GetCharacter():GetName(), tostring( name ) )
-	end );
+    ix.log.AddType("ItemSpawn_Request", function(client, itemName)
+        return string.format("%s spawned the item: \"%s\".", client:GetCharacter():GetName(), tostring(itemName))
+    end)
 
-	net.Receive("spawnmenuspawnitem", function( len, client )
-		local u = net.ReadString();
-		if( !CAMI.PlayerHasAccess( client, "Spawn Menu: Items - Spawning", nil ) ) then return end;
-		for _, t in pairs( ix.item.list ) do
-			if( t.uniqueID == u ) then
-				ix.item.Spawn( t.uniqueID, client:GetShootPos() + client:GetAimVector() * 84 + Vector( 0, 0, 16 ) );
-				ix.log.Add( client, "spawnmenuspawnitem", t.name )
-				break;
-			end
-		end
-	end );
+    net.Receive("ItemSpawn_Request", function(len, client)
+        local uniqueID = net.ReadString()
+
+        if not CAMI.PlayerHasAccess(client, "Item Spawn Menu - Spawning", nil) then return end
+
+        for _, item in pairs(ix.item.list) do
+            if item.uniqueID == uniqueID then
+                ix.item.Spawn(item.uniqueID, client:GetShootPos() + client:GetAimVector() * 84 + Vector(0, 0, 16), function(item, entity)
+                    if IsValid(entity) then
+                        undo.Create(item.name)
+                        undo.AddEntity(entity)
+                        undo.SetPlayer(client)
+                        undo.Finish()
+                    end
+                end)
+
+                ix.log.Add(client, "ItemSpawn_Request", item.name)
+                break
+            end
+        end
+    end)
+
+    net.Receive("ItemGive_Request", function(len, player)
+        if not CAMI.PlayerHasAccess(player, "Item Spawn Menu - Spawning", nil) then return end
+
+        local data = net.ReadString()
+        if #data <= 0 then return end
+
+        local uniqueID = data:lower()
+
+        if not ix.item.list[uniqueID] then
+            for k, v in SortedPairs(ix.item.list) do
+                if ix.util.StringMatches(v.name, uniqueID) then
+                    uniqueID = k
+                    break
+                end
+            end
+        end
+
+        local success, error = player:GetCharacter():GetInventory():Add(uniqueID, 1)
+
+        if success then
+            player:NotifyLocalized("itemCreated")
+        else
+            player:NotifyLocalized(tostring(error))
+        end
+    end)
 else
+	local PLUGIN = PLUGIN
 
-	function PLUGIN:InitializedConfig()
-		if( SERVER ) then return end;
-		RunConsoleCommand( "spawnmenu_reload" ); -- If someone legit knows how to insert stuff into the spawn menu without breaking it or doing it before the spawn menu is created, please tell me. Otherwise, this is the best I got.
-	end
+    function PLUGIN:InitializedPlugins()
+        if SERVER then return end
+        RunConsoleCommand("spawnmenu_reload")
+    end
 
-	local PLUGIN = PLUGIN;
+    spawnmenu.AddCreationTab("Items", function()
+        local panel = vgui.Create("SpawnmenuContentPanel")
+        local tree, nav = panel.ContentNavBar.Tree, panel.OldSpawnlists
 
-	spawnmenu.AddCreationTab( "Items", function()
-	
-		local p = vgui.Create( "SpawnmenuContentPanel" );
-		local t, n = p.ContentNavBar.Tree, p.OldSpawnlists;
-	
-		local l = {};
-		for uid, i in pairs( ix.item.list ) do
-			local c = i.category;
-			l[c] = l[c] or {};
-			table.insert( l[c], i );
-		end
+        local categories = {}
+        for uid, item in pairs(ix.item.list) do
+            local category = item.category
+            categories[category] = categories[category] or {}
+            table.insert(categories[category], item)
+        end
 
-		for c, i in SortedPairs( l ) do
+        for category, items in SortedPairs(categories) do
+            local icon16 = PLUGIN:GetCategoryIcon(category)
+            local node = tree:AddNode(L(category), icon16)
+            node.DoClick = function(self)
+                if self.PropPanel and IsValid(self.PropPanel) then 
+                    self.PropPanel:Remove()
+                    self.PropPanel = nil
+                end
 
-			local icon16 = PLUGIN:GetExpectedIcon( c );
-			local node = t:AddNode( L(c), icon16 )
-			node.DoClick = function( self )
-				
-				if( self.PropPanel and IsValid( self.PropPanel ) ) then 
-					self.PropPanel:Remove()
-					self.PropPanel = nil;
-				end;
+                self.PropPanel = vgui.Create("ContentContainer", panel)
+                self.PropPanel:SetVisible(false)
+                self.PropPanel:SetTriggerSpawnlistChange(false)
 
-				self.PropPanel = vgui.Create( "ContentContainer", p );
-				self.PropPanel:SetVisible( false );
-				self.PropPanel:SetTriggerSpawnlistChange( false );
-	
-				for _, t in SortedPairsByMemberValue( i, "name" ) do
-	
-					spawnmenu.CreateContentIcon( "item", self.PropPanel, {
-						nicename	= ( t.GetName and t:GetName() ) or t.name,
-						spawnname	= t.uniqueID,
-					} )
-	
-				end
-	
-				p:SwitchPanel( self.PropPanel );
-	
-			end
-	
-		end
-	
-		local FirstNode = t:Root():GetChildNode( 0 );
-		if ( IsValid( FirstNode ) ) then
-			FirstNode:InternalDoClick();
-		end
-	
-		return p;
-	
-	end, "icon16/cog_add.png", 201 );
+                for _, item in SortedPairsByMemberValue(items, "name") do
+                    spawnmenu.CreateContentIcon("item", self.PropPanel, {
+                        nicename = (item.GetName and item:GetName()) or item.name,
+                        spawnname = item.uniqueID,
+                    })
+                end
 
-	spawnmenu.AddContentType( "item", function( p, data )
-		
-		local n = data.nicename;
-		local u = data.spawnname;
-		
-		local icon = vgui.Create( "SpawnIcon", p );
-		icon:SetWide( 64 );
-		icon:SetTall( 64 );
-		icon:InvalidateLayout( true );
+                panel:SwitchPanel(self.PropPanel)
+            end
+        end
 
-		local t = ix.item.list;
-		local i = t[u];
+        local firstNode = tree:Root():GetChildNode(0)
+        if IsValid(firstNode) then
+            firstNode:InternalDoClick()
+        end
 
-		icon:SetModel( ( i.GetModel and i:GetModel() ) or i.model );
-		icon:SetTooltip( n );
+        return panel
+    end, "icon16/cog_add.png", 201)
 
-		icon.DoClick = function( s ) 
-			surface.PlaySound( "ui/buttonclickrelease.wav" );
-			if( !CAMI.PlayerHasAccess( LocalPlayer(), "Spawn Menu: Items - Spawning", nil ) ) then 
-				return;
-			end
+    spawnmenu.AddContentType("item", function(panel, data)
+        local name, uniqueID = data.nicename, data.spawnname
+        local icon = vgui.Create("SpawnIcon", panel)
+        icon:SetWide(64)
+        icon:SetTall(64)
+        icon:InvalidateLayout(true)
 
-			net.Start( "spawnmenuspawnitem" );
-				net.WriteString( u );
-			net.SendToServer();
-		end
+        local item = ix.item.list[uniqueID]
 
-		icon:InvalidateLayout( true );
+        icon:SetModel((item.GetModel and item:GetModel()) or item.model)
+        icon:SetTooltip(name)
 
-		if ( IsValid( p ) ) then
-			p:Add( icon )
-		end
+        icon.DoClick = function(self)
+            surface.PlaySound("ui/buttonclickrelease.wav")
+            if not CAMI.PlayerHasAccess(LocalPlayer(), "Item Spawn Menu - Spawning", nil) then 
+                return
+            end
 
-		return icon;
-		
-	end );
+            net.Start("ItemSpawn_Request")
+            net.WriteString(uniqueID)
+            net.SendToServer()
+        end
 
+        function icon:OpenMenu()
+            local menu = DermaMenu()
+
+            local copyOption = menu:AddOption("Copy Item ID", function()
+                SetClipboardText(item.uniqueID)
+            end)
+            copyOption:SetIcon("icon16/page_copy.png")
+
+            local giveOption = menu:AddOption("Give to Myself", function()
+                net.Start("ItemGive_Request")
+                net.WriteString(item.uniqueID)
+                net.SendToServer()
+            end)
+            giveOption:SetIcon("icon16/user_add.png")
+
+            local refreshOption = menu:AddOption("Refresh Icon", function()
+                if IsValid(icon) then
+                    icon:RebuildSpawnIcon()
+                end
+            end)
+            refreshOption:SetIcon("icon16/arrow_refresh.png")
+
+            menu:Open()
+        end
+
+        icon:InvalidateLayout(true)
+
+        if IsValid(panel) then
+            panel:Add(icon)
+        end
+
+        return icon
+    end)
 end

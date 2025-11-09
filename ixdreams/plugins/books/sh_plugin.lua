@@ -5,10 +5,11 @@ PLUGIN.desc = "Adds readable books."
 PAPERLIMIT = 10000
 
 if CLIENT then
-    netstream.Hook("receiveBook", function(id, pages)
+    netstream.Hook("receiveBook", function(id, pages, name)
         local paper = vgui.Create("bookRead")
-        paper:setText(pages, id)
+        paper:setText(pages, id, name)
     end)
+
 else
     netstream.Hook("bookSendText", function(client, id, pages)
         local char = client:GetCharacter()

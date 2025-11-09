@@ -521,3 +521,52 @@ ITEM.functions.DFillFromSink = {
             and (not item:GetLiquid() or item:GetLiquid() == "water")
     end
 }
+
+
+ITEM.functions.ADrinkPoison = {
+    name = "Drink",
+    icon = "icon16/drink.png",
+
+    OnRun = function(item)
+        local client = item.player
+        local vol = item:GetVolume()
+
+        if vol then
+            local maxDrink = ix.config.Get("maxDrinkingVolume", 150)
+            local volConsumed = math.min(vol, maxDrink)
+
+            -- Consume base liquid
+            local baseLiquid = ix.liquids.Get(item:GetLiquid())
+            if baseLiquid then
+                baseLiquid:OnConsume(client, volConsumed)
+                client:EmitSound(baseLiquid:GetConsumeSound())
+            end
+
+            -- Consume poisonheadcrab if poisoned
+            if item:GetData("isPoisoned") == true then
+                local poisonLiquid = ix.liquids.Get("poisonheadcrab")
+                if poisonLiquid then
+                    poisonLiquid:OnConsume(client, volConsumed)
+                    client:EmitSound(poisonLiquid:GetConsumeSound())
+                end
+            end
+
+            item:SetVolume(vol - volConsumed)
+        end
+
+        return false
+    end,
+
+    OnCanRun = function(item)
+        if item:GetVolume() <= 0 then
+            return false
+        end
+
+        if item:GetData("isPoisoned") ~= true then
+            return false
+        end
+
+        local liquid = ix.liquids.Get(item:GetLiquid())
+        return liquid and liquid:CanConsume() and item.player
+    end
+}

@@ -2,7 +2,7 @@ local PLUGIN = PLUGIN
 local STATUS = {}
 
 STATUS.name = "Poison (Light)"
-STATUS.uniqueID = "poison_light"
+STATUS.uniqueID = "poisonlight"
 
 function STATUS:OnApply(client, scaleFactor)
 	net.Start("ix_DoPoisonLight")

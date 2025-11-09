@@ -71,6 +71,8 @@ ITEM.functions.combine = {
                     local index = item:GetData("id", "")
                     hook.Run("OnBagDropped", index)
                 end)
+            end
+        end
 
         -- Optional: restore movement if interrupted early
         timer.Simple(3, function()
@@ -79,9 +81,6 @@ ITEM.functions.combine = {
                 ply:SetRunSpeed(origRun)
             end
         end)
-    end
-end
-
         -- ✅ Cutting: 3-second action before unsealing or exploding
         elseif other.uniqueID == "bowieknife" and sealed then
             if SERVER then
@@ -105,8 +104,8 @@ end
         end
 
         return false
-    end,
-
+    end
+    }
     OnCanRun = function(item, data)
         local other = ix.item.instances[data[1]]
         if not other then return false end

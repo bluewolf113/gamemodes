@@ -19,9 +19,24 @@ ITEM.functions.use = {
     OnRun = function(item)
         local client = item.player
         local id = item:GetID()
+
         if id then
-            netstream.Start(client, "receiveBook", id, item.pages)
+            local cleanPages = {}
+            for k, v in pairs(item.pages or {}) do
+                cleanPages[k] = tostring(v)
+            end
+
+            netstream.Start(client, "receiveBook", id, cleanPages, item.name)
         end
+
         return false
     end
 }
+
+ITEM:PostHook("OnItemTransferred", function(self, oldInventory, newInventory)
+    local receiver = self.player
+
+    if IsValid(receiver) then
+        receiver:EmitSound("items/paper_pickup.wav", 60)
+    end
+end)

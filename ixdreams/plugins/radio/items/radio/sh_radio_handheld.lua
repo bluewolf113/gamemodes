@@ -1,12 +1,12 @@
 ITEM.name = "Handheld Radio"
 ITEM.model = "models/radio/w_radio.mdl"
 ITEM.description = "A handheld radio with a frequency tuner."
-ITEM.width = 1
+ITEM.width = 2
 ITEM.height = 1
 
-ITEM.enableSound = "buttons/lever7.wav"
-ITEM.disableSound = "buttons/lever7.wav"
-ITEM.receiveSound = "buttons/blip1.wav"
+ITEM.enableSound = "ambient/levels/prison/radio_random11.wav"
+ITEM.disableSound = "ambient/levels/prison/radio_random1.wav"
+ITEM.receiveSound = "ambient/levels/prison/radio_random2.wav"
 
 ITEM.frequencyBand = {
     ["min"] = 462.0,

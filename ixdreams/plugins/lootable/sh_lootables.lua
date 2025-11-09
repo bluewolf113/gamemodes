@@ -5,11 +5,11 @@ local lootable = {}
 lootable.name = "Barrel"
 lootable.model = "models/props_c17/oildrum001.mdl"
 lootable.items = {
-    "wep_mp7"
+    "rustygun2"
 }
 
 lootable.rareItems = {
-    "wep_usp"
+    "rustygun5"
 }
 
 function lootable:lootTime()
