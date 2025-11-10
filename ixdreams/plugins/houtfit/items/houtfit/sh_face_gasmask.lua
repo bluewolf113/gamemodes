@@ -4,7 +4,6 @@ ITEM.category = "Clothing"
 ITEM.model = "models/willardnetworks/clothingitems/head_gasmask.mdl"
 ITEM.width = 2
 ITEM.height = 2
-ITEM.gasImmunity = true
 ITEM.iconCam = {
     pos = Vector(-117.67, -98.6, 71.58),
     ang = Angle(25, 400, 0),
@@ -20,12 +19,39 @@ function ITEM:PopulateTooltip(tooltip)
     data:SetFont("BudgetLabel")
     data:SetExpensiveShadow(0.5)
     data:SizeToContents()
-end
 
+    local durability = self:GetData("gasmaskdurability", 0)
+	local max = self.gasmaskDurabilityMax or 250
+
+	local row = tooltip:AddRow("filterStatus")
+
+	if durability > 0 then
+		local percent = math.ceil((durability / max) * 100)
+		local status
+
+		if percent >= 90 then
+			status = "Pristine"
+		elseif percent >= 60 then
+			status = "Worn"
+		elseif percent >= 30 then
+			status = "Damaged"
+		else
+			status = "Critical"
+		end
+
+		row:SetText("Filter Status: " .. status)
+		row:SetBackgroundColor(Color(100, 200, 255)) -- light blue
+	else
+		row:SetText("No filter installed.")
+		row:SetBackgroundColor(Color(255, 100, 100)) -- light red
+	end
+
+	row:SizeToContents()
+end
 
 ITEM.outfitCategory = "Face"
 ITEM.bodyGroups = {
-    ["face"] = 2
+    ["headstrap"] = 3
 }
 
 ITEM.allowedModels = {
@@ -46,4 +72,6 @@ ITEM.allowedModels = {
     "models/willardnetworks/citizens/male08.mdl",
     "models/willardnetworks/citizens/male09.mdl",
     "models/willardnetworks/citizens/male10.mdl",
+
+    "models/humans/pandafishizens/male_07.mdl"
 }

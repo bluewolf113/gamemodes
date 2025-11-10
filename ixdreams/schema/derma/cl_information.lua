@@ -268,6 +268,27 @@ function PANEL:Update(character)
 		self.description:SizeToContents()
 	end
 
+	if IsValid(self.statusBox) then
+        self.statusBox:Remove()
+    end
+
+    local statusInfo = character:GetCharStatus()
+    local statusColor = PLUGIN and PLUGIN.colorTable and statusInfo and PLUGIN.colorTable[statusInfo[1]:utf8lower()] or Color(100, 100, 100)
+    local statusText = (statusInfo and statusInfo[2] and #statusInfo[2] > 0) and statusInfo[2] or "No status set"
+
+    self.statusBox = self:Add("DLabel")
+    self.statusBox:Dock(TOP)
+    self.statusBox:DockMargin(0, 0, 0, 8)
+    self.statusBox:SetFont("ixMenuButtonFont")
+    self.statusBox:SetTextColor(color_white)
+    self.statusBox:SetContentAlignment(5)
+    self.statusBox:SetText(statusText)
+    self.statusBox:SetTall(24)
+    self.statusBox.Paint = function(this, w, h)
+        surface.SetDrawColor(statusColor)
+        surface.DrawRect(0, 0, w, h)
+    end
+
 	if (self.faction) then
 		self.faction:SetLabelText(L("faction"))
 		self.faction:SetText(L(faction.name))

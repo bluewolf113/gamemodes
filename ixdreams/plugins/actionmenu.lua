@@ -10,15 +10,26 @@ if SERVER then
     net.Receive("ixDrinkWater", function(_, client)
         if not IsValid(client) or not client:Alive() then return end
 
-        if client:WaterLevel() >= 1 then
-            client:EmitSound("ambient/water/drip2.wav")
-            client:ChatPrint("You take a refreshing sip of water.")
-        else
-            client:ChatPrint("You're not standing in water!")
+        -- must be standing in water
+        if client:WaterLevel() < 1 then
+            client:Notify("You're not standing in water!")
+            return
         end
+
+        local liquid = ix.liquids.Get("waterraw")
+        if not liquid then return end
+
+        local volConsumed = 80
+
+        -- apply liquid effects
+        liquid:OnConsume(client, volConsumed)
+
+        -- play sound
+        client:EmitSound(liquid:GetConsumeSound())
     end)
 else
-    function PLUGIN:PlayerButtonDown(client, button)
+    -- Toggle menu on F1 press
+    hook.Add("PlayerButtonDown", "ActionMenuBindF1", function(ply, button)
         if button == KEY_F1 then
             if IsValid(ix.gui.actionMenu) then
                 ix.gui.actionMenu:Destroy()
@@ -26,7 +37,7 @@ else
                 vgui.Create("ixActionMenu")
             end
         end
-    end
+    end)
 
     -- PANEL definition styled like ixInteractMenu
     local PANEL = {}
@@ -39,16 +50,17 @@ else
         ix.gui.actionMenu = self
         self.options = {}
 
-        self:SetSize(160, 12)
+        -- wider menu
+        self:SetSize(260, 12)
         self:MakePopup()
         self:Center()
 
-        -- Add our two options
+        -- Add options
         self:AddOption({
-            name = "Change Character Status",
-            icon = "icon16/user.png",
+            name = "Fall Over",
+            icon = "icon16/arrow_down.png",
             callback = function()
-                vgui.Create("ixStatusMenu")
+                RunConsoleCommand("say", "/charfallover")
             end
         })
 
@@ -65,9 +77,9 @@ else
     end
 
     function PANEL:Build()
-        local newHeight = self:GetTall()
-        for _, v in pairs(self.options) do
-            newHeight = newHeight + 24
+        local newHeight = 12
+        for _ in pairs(self.options) do
+            newHeight = newHeight + 28
         end
         self:SetTall(newHeight)
     end
@@ -77,14 +89,17 @@ else
         option:SetText("")
         option:Dock(TOP)
         option:SetTall(24)
+        option:DockMargin(6, (#self.options < 1) and 6 or 0, 6, 0)
+
         option.Paint = function()
             if option:IsHovered() then
                 surface.SetDrawColor(90, 90, 90, 150)
                 surface.DrawRect(0, 0, option:GetWide(), option:GetTall())
             end
 
-            ix.util.DrawText(data.name, 24, 4, color_white, 0, 0, "ixSmallFont")
+            ix.util.DrawText(data.name, 32, 5, color_white, 0, 0, "ixSmallFont")
         end
+
         option.DoClick = function()
             if data.callback then
                 data.callback()
@@ -92,12 +107,10 @@ else
             self:Destroy()
         end
 
-        option:DockMargin(6, (#self.options < 1) and 6 or 0, 6, 0)
-
         if data.icon then
             local icon = option:Add("DImage")
-            icon:SetSize(12, 12)
-            icon:SetPos(4, 6)
+            icon:SetSize(16, 16)
+            icon:SetPos(8, 4)
             icon:SetMaterial(data.icon)
             icon.AutoSize = false
         end
@@ -108,6 +121,12 @@ else
     function PANEL:Destroy()
         self:Remove()
         ix.gui.actionMenu = nil
+    end
+
+    function PANEL:OnRemove()
+        if ix and ix.gui and ix.gui.actionMenu == self then
+            ix.gui.actionMenu = nil
+        end
     end
 
     function PANEL:Paint(w, h)

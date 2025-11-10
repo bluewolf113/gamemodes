@@ -1,9 +1,9 @@
-ITEM.name = "M40 Gas Mask"
-ITEM.description = "Provides adequate protection against harmful fumes, gases, and some foul odours. it is also fairly compact"
+ITEM.name = "GP-6 Soviet Gasmask"
+ITEM.description = "Provides adequate protection against harmful fumes, gases, and some foul odours."
 ITEM.category = "Clothing"
-ITEM.model = "models/willardnetworks/update_items/m40_item.mdl"
-ITEM.width = 1
-ITEM.height = 1
+ITEM.model = "models/willardnetworks/clothingitems/head_gasmask.mdl"
+ITEM.width = 2
+ITEM.height = 2
 ITEM.gasImmunity = true
 ITEM.iconCam = {
     pos = Vector(-117.67, -98.6, 71.58),
@@ -22,9 +22,10 @@ function ITEM:PopulateTooltip(tooltip)
     data:SizeToContents()
 end
 
+
 ITEM.outfitCategory = "Face"
 ITEM.bodyGroups = {
-    ["face"] = 3
+    ["face"] = 2
 }
 
 ITEM.allowedModels = {
@@ -45,6 +46,4 @@ ITEM.allowedModels = {
     "models/willardnetworks/citizens/male08.mdl",
     "models/willardnetworks/citizens/male09.mdl",
     "models/willardnetworks/citizens/male10.mdl",
-
-    "models/humans/pandafishizens/male_07.mdl"
 }
